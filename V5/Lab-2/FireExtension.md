@@ -81,4 +81,4 @@ end
 
 ![Скріншот моделі в процесі симуляції](example.png)
 
-Фінальний код моделі та її інтерфейс доступні за ![посиланням](Project/Fire Simple Extension 2.nlogo).
+Фінальний код моделі та її інтерфейс доступні за ![посиланням](https://github.com/mykavin/CSMS-SPm-22-5_Variant-5/blob/lab-2/V5/Lab-2/Project/Fire%20Simple%20Extension%202.nlogo).
