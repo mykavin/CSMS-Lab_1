@@ -81,4 +81,4 @@ end
 
 ![Скріншот моделі в процесі симуляції](example.png)
 
-Фінальний код моделі та її інтерфейс доступні за [посиланням](Project/Fire Simple Extension 2.nlogo).
+Фінальний код моделі та її інтерфейс доступні за ![посиланням](Project/Fire Simple Extension 2.nlogo).
