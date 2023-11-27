@@ -21,11 +21,17 @@ distanceToFire - початкова відстань до лінії вогню
 <pre>
 globals [
   initial-trees   ;; how many trees (green patches) we started with
-  fireFighters
-  fireFightersSteps
   fireFighterColor
   distanceToFire
+  itterationsCount
 ]
+
+turtles-own [
+  isFire?
+  speed
+]
+
+breed [firefighters firefighter]
 </pre>
 
 **Додано процедуру додавання пожежників перед початком симуляції:**.
@@ -33,14 +39,17 @@ globals [
 <pre>
 to makeAgents
 
-  set fireFighters firefighters-count
+  set distanceToFire (min-pxcor + distance-to-fire)
 
-  ask patches with [pxcor = min-pxcor + distanceToFire and pcolor = black] [
-    if fireFighters > 0 [
-      set pcolor fireFighterColor
-    ]
+  create-turtles firefighters-count [
+    setxy distanceToFire random-ycor
+    set color fireFighterColor
+    set isFire? false
+    set speed 0.2
+  ]
 
-    set fireFighters fireFighters - 1
+  create-firefighters firefighters-count [
+    setxy distanceToFire random-ycor
   ]
 
 end
@@ -51,17 +60,14 @@ end
 <pre>
 to moveAgents
 
-  set fireFighters firefighters-count
-  set fireFightersSteps fireFightersSteps + 1
-
-
-  ask patches with [pxcor = min-pxcor + distanceToFire + fireFightersSteps and (pcolor = black or pcolor = green)] [
-    if fireFighters > 0 [
-      set pcolor fireFighterColor
+  ask turtles [
+    if any? other turtles in-radius 1 with [isFire?] [
+      set isFire? true
+      set color cyan
     ]
-
-    set fireFighters fireFighters - 1
+    forward 1
   ]
+
 end
 </pre>
 
@@ -70,11 +76,14 @@ end
 <pre>
 to fightWithFire
 
-  ask patches with [ pxcor = min-pxcor + distanceToFire + fireFightersSteps and pcolor = fireFighterColor ] [
-       ask neighbors4 with [ pcolor = red ] [
-         set pcolor blue + 2
-       ]
+  let nearFire other turtles in-radius 1 with [isFire?]
+
+  ask nearFire [
+    if random-float 1 < 0.7 [
+      set isFire? false
+      set color white
     ]
+  ]
 
 end
 </pre>

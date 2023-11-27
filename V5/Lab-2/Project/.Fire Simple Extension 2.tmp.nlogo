@@ -1,17 +1,21 @@
 globals [
   initial-trees   ;; how many trees (green patches) we started with
-  fireFighters
-  fireFightersSteps
   fireFighterColor
   distanceToFire
   itterationsCount
 ]
 
+turtles-own [
+  isFire?
+  speed
+]
+
+breed [firefighters firefighter]
 
 to setup
   clear-all
 
-  set fireFightersSteps 0
+
   set fireFighterColor yellow
   set distanceToFire distance-to-fire
   set itterationsCount 1
@@ -26,8 +30,10 @@ to setup
   ]
   ;; keep track of how many trees there are
   set initial-trees count patches with [pcolor = green]
-  reset-ticks
+
   makeAgents
+
+  reset-ticks
 end
 
 to go
@@ -76,53 +82,70 @@ to go
     set pcolor red - 3.5 ;; once the tree is burned, darken its color
   ]
 
-  fightWithFire
-
-  if itterationsCount > itterations-to-move-speed [
-    moveAgents
+  ask firefighters [
+    fightWithFire
   ]
 
-  set itterationsCount itterationsCount + 1
+  moveAgents
+
+  set distanceToFire (distanceToFire + 1)
 
   tick ;; advance the clock by one “tick”
 end
 
-to makeAgents
 
-  set fireFighters firefighters-count
+  set distanceToFire (min-pxcor + distance-to-fire)
 
-  ask patches with [pxcor = min-pxcor + distanceToFire and pcolor = black] [
-    if fireFighters > 0 [
-      set pcolor fireFighterColor
-    ]
+  create-turtles firefighters-count [
+    setxy distanceToFire random-ycor
+    set color fireFighterColor
+    set isFire? false
+    set speed 0.2
+  ]
 
-    set fireFighters fireFighters - 1
+  create-firefighters firefighters-count [
+    setxy distanceToFire random-ycor
+  ]
+
+endto makeAgents
+
+  set distanceToFire (min-pxcor + distance-to-fire)
+
+  create-turtles firefighters-count [
+    setxy distanceToFire random-ycor
+    set color fireFighterColor
+    set isFire? false
+    set speed 0.2
+  ]
+
+  create-firefighters firefighters-count [
+    setxy distanceToFire random-ycor
   ]
 
 end
 
 to moveAgents
 
-  set fireFighters firefighters-count
-  set fireFightersSteps fireFightersSteps + 1
-
-
-  ask patches with [pxcor = min-pxcor + distanceToFire + fireFightersSteps and (pcolor = black or pcolor = green)] [
-    if fireFighters > 0 [
-      set pcolor fireFighterColor
+  ask turtles [
+    if any? other turtles in-radius 1 with [isFire?] [
+      set isFire? true
+      set color cyan
     ]
-
-    set fireFighters fireFighters - 1
+    forward 1
   ]
+
 end
 
 to fightWithFire
 
-  ask patches with [ pxcor = min-pxcor + distanceToFire + fireFightersSteps and pcolor = fireFighterColor ] [
-       ask neighbors4 with [ pcolor = red ] [
-         set pcolor blue + 2
-       ]
+  let nearFire other turtles in-radius 1 with [isFire?]
+
+  ask nearFire [
+    if random-float 1 < 0.7 [
+      set isFire? false
+      set color white
     ]
+  ]
 
 end
 
@@ -156,24 +179,6 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
-PLOT
-0
-0
-0
-0
-plot 1
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
-
 MONITOR
 43
 131
@@ -194,7 +199,7 @@ density
 density
 0.0
 100.0
-81.0
+74.0
 1.0
 1
 %
@@ -285,7 +290,7 @@ INPUTBOX
 126
 374
 firefighters-count
-25.0
+7.0
 1
 0
 Number
@@ -314,7 +319,7 @@ itterations-to-move-speed
 itterations-to-move-speed
 1
 100
-50.0
+20.0
 1
 1
 NIL
