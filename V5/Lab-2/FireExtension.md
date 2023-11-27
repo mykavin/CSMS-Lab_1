@@ -14,21 +14,25 @@
 **Додано наступні глобальні змінні у setup:**.
 
 fireFighters - кількість пожежників
-fireFightersSteps - додаткова змінна для підрахування наступної позиціїї пожежників
+fighterRadius - радіус дії пожежника
+fireFighterSpeed - швидкість пожежника
 fireFighterColor - колір пожежника
 distanceToFire - початкова відстань до лінії вогню
+agentsOn - включити/виключити агентів у симуляції
 
 <pre>
 globals [
   initial-trees   ;; how many trees (green patches) we started with
   fireFighterColor
   distanceToFire
-  itterationsCount
+  fireFighterSpeed
+  fighterRadius
+  agentsOn
 ]
 
 turtles-own [
-  isFire?
   speed
+  fightRadius
 ]
 
 breed [firefighters firefighter]
@@ -43,9 +47,9 @@ to makeAgents
 
   create-turtles firefighters-count [
     setxy distanceToFire random-ycor
-    set color fireFighterColor
-    set isFire? false
-    set speed 0.2
+    set color white
+    set speed fireFighterSpeed
+    set fightRadius fighterRadius
   ]
 
   create-firefighters firefighters-count [
@@ -58,15 +62,20 @@ end
 **Додано процедуру переміщення пожежників під час симуляції:**.
 
 <pre>
-to moveAgents
+to moveRandom
 
-  ask turtles [
-    if any? other turtles in-radius 1 with [isFire?] [
-      set isFire? true
-      set color cyan
-    ]
-    forward 1
-  ]
+  rt random 50
+  lt random 50
+  fd 1
+
+  set color fireFighterColor
+
+end
+
+to moveToSearchTheFire [target]
+
+  face target
+  fd speed
 
 end
 </pre>
@@ -74,17 +83,17 @@ end
 **Додано процедуру боротьби пожежників з вогнем під час симуляції:**.
 
 <pre>
+
 to fightWithFire
 
-  let nearFire other turtles in-radius 1 with [isFire?]
-
-  ask nearFire [
-    if random-float 1 < 0.7 [
-      set isFire? false
-      set color white
+  let fire-neighbors patches in-radius fight-radius with [pcolor = red]
+  ask fire-neighbors [
+    if random-float 1 < probability-fight-fire [
+      ask myself [
+        set pcolor green
+      ]
     ]
   ]
-
 end
 </pre>
 

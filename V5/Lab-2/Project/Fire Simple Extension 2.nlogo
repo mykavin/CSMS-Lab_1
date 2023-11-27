@@ -2,12 +2,14 @@ globals [
   initial-trees   ;; how many trees (green patches) we started with
   fireFighterColor
   distanceToFire
-  itterationsCount
+  fireFighterSpeed
+  fighterRadius
+  agentsOn
 ]
 
 turtles-own [
-  isFire?
   speed
+  fightRadius
 ]
 
 breed [firefighters firefighter]
@@ -18,7 +20,10 @@ to setup
 
   set fireFighterColor yellow
   set distanceToFire distance-to-fire
-  set itterationsCount 1
+  set fireFighterSpeed fire-fighter-speed
+  set fighterRadius fight-radius
+
+  set agentsOn true
 
   ;; make some green trees
   ask patches [
@@ -82,15 +87,27 @@ to go
     set pcolor red - 3.5 ;; once the tree is burned, darken its color
   ]
 
-  ask firefighters [
-    fightWithFire
+  if agentsOn [
+
+   ask firefighters [
+
+     let nearFire patches in-radius fighterRadius with [pcolor = red]
+
+     ifelse any? nearFire [
+
+       moveToSearchTheFire one-of nearFire
+       fightWithFire
+
+     ] [
+
+       moveRandom
+
+     ]
+   ]
   ]
 
-  moveAgents
-
-  set distanceToFire (distanceToFire + 1)
-
   tick ;; advance the clock by one “tick”
+
 end
 
 to makeAgents
@@ -99,9 +116,9 @@ to makeAgents
 
   create-turtles firefighters-count [
     setxy distanceToFire random-ycor
-    set color fireFighterColor
-    set isFire? false
-    set speed 0.2
+    set color white
+    set speed fireFighterSpeed
+    set fightRadius fighterRadius
   ]
 
   create-firefighters firefighters-count [
@@ -110,29 +127,34 @@ to makeAgents
 
 end
 
-to moveAgents
 
-  ask turtles [
-    if any? other turtles in-radius 1 with [isFire?] [
-      set isFire? true
-      set color cyan
-    ]
-    forward 1
-  ]
+to moveRandom
+
+  rt random 50
+  lt random 50
+  fd 1
+
+  set color fireFighterColor
+
+end
+
+to moveToSearchTheFire [target]
+
+  face target
+  fd speed
 
 end
 
 to fightWithFire
 
-  let nearFire other turtles in-radius 1 with [isFire?]
-
-  ask nearFire [
-    if random-float 1 < 0.7 [
-      set isFire? false
-      set color white
+  let fire-neighbors patches in-radius fight-radius with [pcolor = red]
+  ask fire-neighbors [
+    if random-float 1 < probability-fight-fire [
+      ask myself [
+        set pcolor green
+      ]
     ]
   ]
-
 end
 
 ; Copyright 2006 Uri Wilensky.
@@ -185,7 +207,7 @@ density
 density
 0.0
 100.0
-74.0
+82.0
 1.0
 1
 %
@@ -276,37 +298,67 @@ INPUTBOX
 126
 374
 firefighters-count
-7.0
+100.0
 1
 0
 Number
 
 SLIDER
 5
-386
+378
 189
-419
+411
 distance-to-fire
 distance-to-fire
 1
 25
-1.0
+15.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-7
-430
-190
-463
-itterations-to-move-speed
-itterations-to-move-speed
+5
+415
+189
+448
+probability-fight-fire
+probability-fight-fire
+0
 1
-100
-20.0
+1.0
+0.01
 1
+NIL
+HORIZONTAL
+
+SLIDER
+4
+452
+176
+485
+fight-radius
+fight-radius
+0
+50
+5.41
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+5
+488
+177
+521
+fire-fighter-speed
+fire-fighter-speed
+0.0
+100.0
+5.73
+0.01
 1
 NIL
 HORIZONTAL
