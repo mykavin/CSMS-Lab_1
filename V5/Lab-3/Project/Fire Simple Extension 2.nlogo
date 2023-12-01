@@ -1,30 +1,10 @@
 globals [
   initial-trees   ;; how many trees (green patches) we started with
-  fireFighterColor
-  distanceToFire
-  fireFighterSpeed
-  fighterRadius
-  agentsOn
+  total-trees
 ]
-
-turtles-own [
-  speed
-  fightRadius
-]
-
-breed [firefighters firefighter]
 
 to setup
   clear-all
-
-
-  set fireFighterColor yellow
-  set distanceToFire distance-to-fire
-  set fireFighterSpeed fire-fighter-speed
-  set fighterRadius fight-radius
-
-  set agentsOn
-
   ;; make some green trees
   ask patches [
     if (random 100) < density
@@ -35,9 +15,7 @@ to setup
   ]
   ;; keep track of how many trees there are
   set initial-trees count patches with [pcolor = green]
-
-  makeAgents
-
+  set total-trees count patches with [pcolor = green]
   reset-ticks
 end
 
@@ -47,7 +25,6 @@ to go
   ;; each burning tree (red patch) checks its 4 neighbors.
   ;; If any are unburned trees (green patches), change their probability
   ;; of igniting based on the wind direction
-
   ask patches with [ pcolor = red ] [
     ;; ask the unburned trees neighboring the burning tree
     ask neighbors4 with [ pcolor = green ] [
@@ -86,76 +63,10 @@ to go
     ]
     set pcolor red - 3.5 ;; once the tree is burned, darken its color
   ]
-
-  if agentsOn [
-
-   ask firefighters [
-
-     let nearFire patches in-radius fighterRadius with [pcolor = red]
-
-     ifelse any? nearFire [
-
-       moveToSearchTheFire one-of nearFire
-       fightWithFire
-
-     ] [
-
-       moveRandom
-
-     ]
-   ]
-  ]
-
+  set total-trees count patches with [pcolor = green]
   tick ;; advance the clock by one “tick”
-
 end
 
-to makeAgents
-
-  set distanceToFire (min-pxcor + distance-to-fire)
-
-  create-turtles firefighters-count [
-    setxy distanceToFire random-ycor
-    set color white
-    set speed fireFighterSpeed
-    set fightRadius fighterRadius
-  ]
-
-  create-firefighters firefighters-count [
-    setxy distanceToFire random-ycor
-  ]
-
-end
-
-
-to moveRandom
-
-  rt random 50
-  lt random 50
-  fd 1
-
-  set color fireFighterColor
-
-end
-
-to moveToSearchTheFire [target]
-
-  face target
-  fd speed
-
-end
-
-to fightWithFire
-
-  let fire-neighbors patches in-radius fight-radius with [pcolor = red]
-  ask fire-neighbors [
-    if random-float 1 < probability-fight-fire [
-      ask myself [
-        set pcolor green
-      ]
-    ]
-  ]
-end
 
 ; Copyright 2006 Uri Wilensky.
 ; See Info tab for full copyright and license.
@@ -288,77 +199,6 @@ west-wind-speed
 25
 25.0
 1
-1
-NIL
-HORIZONTAL
-
-INPUTBOX
-6
-314
-126
-374
-firefighters-count
-100.0
-1
-0
-Number
-
-SLIDER
-5
-378
-189
-411
-distance-to-fire
-distance-to-fire
-1
-25
-15.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-5
-415
-189
-448
-probability-fight-fire
-probability-fight-fire
-0
-1
-1.0
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
-4
-452
-176
-485
-fight-radius
-fight-radius
-0
-50
-5.41
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
-5
-488
-177
-521
-fire-fighter-speed
-fire-fighter-speed
-0.0
-100.0
-5.73
-0.01
 1
 NIL
 HORIZONTAL

@@ -1,5 +1,7 @@
+
 globals [
   initial-trees   ;; how many trees (green patches) we started with
+  total-trees
   fireFighterColor
   distanceToFire
   fireFighterSpeed
@@ -35,6 +37,7 @@ to setup
   ]
   ;; keep track of how many trees there are
   set initial-trees count patches with [pcolor = green]
+  set total-trees count patches with [pcolor = green]
 
   makeAgents
 
@@ -105,6 +108,8 @@ to go
      ]
    ]
   ]
+
+  set total-trees count patches with [pcolor = green]
 
   tick ;; advance the clock by one “tick”
 

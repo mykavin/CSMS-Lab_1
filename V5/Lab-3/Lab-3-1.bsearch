@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<!DOCTYPE search SYSTEM "behaviorsearch.dtd">
+<search>
+    <bsearchVersionNumber>1.10</bsearchVersionNumber>
+    <modelInfo>
+        <modelFile>/Users/nikitavintonovich/Repo/NURE/KSIM/CSMS-SPm-22-5/V5/Lab-3/Project/Fire Simple Extension 2.nlogo</modelFile>
+        <modelSetupCommands>setup</modelSetupCommands>
+        <modelStepCommands>go</modelStepCommands>
+        <modelStopCondition>count turtles &gt; 1000</modelStopCondition>
+        <modelStepLimit>100</modelStepLimit>
+        <modelMetricReporter>mean [percent burned] of turtles</modelMetricReporter>
+        <modelMeasureIf>true</modelMeasureIf>
+    </modelInfo>
+    <fitnessInfo>
+        <fitnessMinimized>false</fitnessMinimized>
+        <fitnessCollecting>AT_FINAL_STEP</fitnessCollecting>
+        <fitnessSamplingReplications>10</fitnessSamplingReplications>
+        <fitnessCombineReplications>MEAN</fitnessCombineReplications>
+    </fitnessInfo>
+    <searchSpace>
+        <paramSpec>["density" [0 1 100]]</paramSpec>
+        <paramSpec>["probability-of-spread" [0 1 100]]</paramSpec>
+        <paramSpec>["south-wind-speed" [-25 1 25]]</paramSpec>
+        <paramSpec>["west-wind-speed" [-25 1 25]]</paramSpec>
+        <paramSpec>["firefighters-count" 100]</paramSpec>
+        <paramSpec>["distance-to-fire" [1 1 25]]</paramSpec>
+        <paramSpec>["probability-fight-fire" [0 0.01 1]]</paramSpec>
+        <paramSpec>["fight-radius" [0 0.01 50]]</paramSpec>
+        <paramSpec>["fire-fighter-speed" [0 0.01 100]]</paramSpec>
+    </searchSpace>
+    <searchMethod type="StandardGA">
+        <searchMethodParameter name="mutation-rate" value="0.03"/>
+        <searchMethodParameter name="population-size" value="50"/>
+        <searchMethodParameter name="crossover-rate" value="0.7"/>
+        <searchMethodParameter name="population-model" value="generational"/>
+        <searchMethodParameter name="tournament-size" value="3"/>
+    </searchMethod>
+    <chromosomeRepresentation type="GrayBinaryChromosome"/>
+    <caching>true</caching>
+    <evaluationLimit>300</evaluationLimit>
+    <bestCheckingNumReplications>0</bestCheckingNumReplications>
+</search>
